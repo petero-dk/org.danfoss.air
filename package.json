@@ -1,0 +1,22 @@
+{
+  "name": "org.danfoss.air",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore ."
+  },
+  "overrides": {
+    "mqtt": "../_EXCLUDED_"
+  },
+  "devDependencies": {
+    "@tsconfig/node16": "^16.1.4",
+    "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
+    "@types/node": "^24.3.0",
+    "eslint": "^7.32.0",
+    "eslint-config-athom": "^3.1.5",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "dfair": "github:Laro88/dfair"
+  }
+}

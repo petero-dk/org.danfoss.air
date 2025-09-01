@@ -5,9 +5,6 @@
     "build": "tsc",
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore ."
   },
-  "overrides": {
-    "mqtt": "../_EXCLUDED_"
-  },
   "devDependencies": {
     "@tsconfig/node16": "^16.1.4",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
@@ -17,6 +14,6 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "dfair": "github:Laro88/dfair"
+    "danfoss-air-api": "github:petero-dk/danfoss-air-api"
   }
 }

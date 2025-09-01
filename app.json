@@ -1,3 +1,105 @@
 {
-  "_comment": "This file is generated. Please edit .homeycompose/app.json instead."
+  "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
+  "id": "org.danfoss.air",
+  "version": "1.0.0",
+  "compatibility": ">=12.4.0",
+  "sdk": 3,
+  "platforms": [
+    "local"
+  ],
+  "name": {
+    "en": "Danfoss Air"
+  },
+  "description": {
+    "en": "Adds support for Danfoss Air units"
+  },
+  "category": [
+    "climate"
+  ],
+  "brandColor": "#bb000c",
+  "permissions": [],
+  "images": {
+    "small": "/assets/images/small.png",
+    "large": "/assets/images/large.png",
+    "xlarge": "/assets/images/xlarge.png"
+  },
+  "author": {
+    "name": "Peter Obel"
+  },
+  "drivers": [
+    {
+      "name": {
+        "en": "Danfoss Air"
+      },
+      "class": "airconditioning",
+      "capabilities": [
+        "measure_battery",
+        "fan_speed",
+        "measure_humidity",
+        "measure_temperature"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "pair": [
+        {
+          "id": "enter_ip"
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "energy": {
+        "batteries": [
+          "AAA",
+          "AAA",
+          "AAA"
+        ]
+      },
+      "images": {
+        "small": "/drivers/danfoss-air/assets/images/small.png",
+        "large": "/drivers/danfoss-air/assets/images/large.png",
+        "xlarge": "/drivers/danfoss-air/assets/images/xlarge.png"
+      },
+      "id": "danfoss-air",
+      "settings": [
+        {
+          "id": "hostname",
+          "type": "text",
+          "label": {
+            "en": "Hostname"
+          },
+          "value": "10.10.10.167",
+          "hint": {
+            "en": "The hostname or IP address of the Danfoss Air device."
+          }
+        }
+      ]
+    }
+  ],
+  "discovery": {
+    "danfoss": {
+      "type": "mac",
+      "mac": {
+        "manufacturer": [
+          [
+            0,
+            7,
+            104
+          ]
+        ]
+      }
+    }
+  }
 }

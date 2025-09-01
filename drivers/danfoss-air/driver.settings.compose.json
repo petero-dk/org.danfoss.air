@@ -1,0 +1,9 @@
+[
+  {
+    "id": "hostname",
+    "type": "text",
+    "label": { "en": "Hostname" },
+    "value": "10.10.10.167",
+    "hint": { "en": "The hostname or IP address of the Danfoss Air device." }
+  }
+]

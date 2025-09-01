@@ -1,1 +1,19 @@
-{}
+{
+  "pair": {
+    "start": {
+      "deviceName": "Enhedsnavn",
+      "error": "Der opstod en fejl.",
+      "not_found": "Enheden blev ikke fundet, eller parameteren matcher ikke.",
+      "intro": "Indtast enhedens IP-adresse<br/><br/>IP kan findes i WIZ-appen under enhed, sektion \"settings - device info\".<br/><br/>Brug venligst \"form\" knappen for at tilf&oslash;je indstillingerne!",
+      "invalidIP": "Indtast venligst en gyldig IPv4-adresse, f.eks. 192.168.1.10",
+      "ipAddress": "IP-adresse",
+      "required": "IP-adresse er en p&aring;kr&aelig;vet v&aelig;rdi.",
+      "saveSettings": "Gem indstillinger",
+      "title01": "Tilslut Color Light",
+      "title02": "Tilslut Dimmable Light",
+      "title03": "Tilslut Energy Socket",
+      "title04": "Tilslut Socket",
+      "title05": "Tilslut Tunable Light"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": {
+    "en": "Danfoss Air"
+  },
+  "class": "airconditioning",
+  "capabilities": [
+    "measure_battery",
+    "fan_speed",
+    "measure_humidity",
+    "measure_temperature"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "pair": [
+    {
+      "id": "enter_ip"
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }],
+  "connectivity": [
+    "lan"
+  ],  
+  "energy": {
+    "batteries": ["AAA", "AAA", "AAA"]
+  },
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  }
+}

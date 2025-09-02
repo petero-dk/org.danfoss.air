@@ -14,7 +14,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "danfoss-air-api": "github:petero-dk/danfoss-air-api#copilot/fix-3",
+    "danfoss-air-api": "github:petero-dk/danfoss-air-api",
     "homey-log": "^2.1.0"
   }
 }

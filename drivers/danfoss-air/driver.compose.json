@@ -5,10 +5,104 @@
   "class": "airconditioning",
   "capabilities": [
     "measure_battery",
-    "fan_speed",
+    "onoff.boost",
+    "fan_speed.step",
+    "fan_mode",
+    "measure_speed.supply",
+    "measure_speed.extract",
+    "measure_hepa_filter",
     "measure_humidity",
-    "measure_temperature"
+    "measure_temperature.inside_calculated",
+    "measure_temperature.inside",
+    "measure_temperature.supply",
+    "measure_temperature.exhaust",
+    "measure_temperature.extract",
+    "measure_temperature.outdoor"
   ],
+  "capabilitiesOptions": {
+    "onoff.boost": {
+      "title": {
+        "en": "Boost"
+      }
+    },
+    "fan_speed.step": {
+      "step": 10
+    },
+    "measure_speed.supply": {
+      "unit": "rpm",
+      "title": {
+        "en": "Supply fan speed",
+        "nl": ""
+      }
+    },
+    "measure_speed.extract": {
+      "unit": "rpm",
+      "title": {
+        "en": "Extract fan speed",
+        "nl": ""
+      }
+    },
+    "fan_mode": {
+      "values": [
+        {
+          "id": "demand",
+          "title": {
+            "en": "Demand",
+            "nl": "Vraag"
+          }
+        },
+        {
+          "id": "program",
+          "title": {
+            "en": "Program",
+            "nl": "Programma"
+          }
+        },
+        {
+          "id": "manual",
+          "title": {
+            "en": "Manual",
+            "nl": "Handmatig"
+          }
+        }
+      ]
+    },
+    "measure_battery": {
+      "title": {
+        "en": "Air Dial Battery"
+      }
+    },
+    "measure_temperature.inside_calculated": {
+      "title": {
+        "en": "Calculated Inside Temperature"
+      }
+    },
+    "measure_temperature.inside": {
+      "title": {
+        "en": "Inside Temperature"
+      }
+    },
+    "measure_temperature.supply": {
+      "title": {
+        "en": "Supply Temperature"
+      }
+    },
+    "measure_temperature.exhaust": {
+      "title": {
+        "en": "Exhaust Temperature"
+      }
+    },
+    "measure_temperature.extract": {
+      "title": {
+        "en": "Extract Temperature"
+      }
+    },
+    "measure_temperature.outdoor": {
+      "title": {
+        "en": "Outdoor Temperature"
+      }
+    }
+  },
   "platforms": [
     "local"
   ],
@@ -19,17 +113,25 @@
     {
       "id": "list_devices",
       "template": "list_devices",
-      "navigation": { "next": "add_devices" }
+      "navigation": {
+        "next": "add_devices"
+      }
     },
     {
       "id": "add_devices",
       "template": "add_devices"
-    }],
+    }
+  ],
   "connectivity": [
     "lan"
-  ],  
+  ],
   "energy": {
-    "batteries": ["AAA", "AAA", "AAA"]
+    "batteries": [
+      "AAA",
+      "AAA",
+      "AAA",
+      "AAA"
+    ]
   },
   "images": {
     "small": "{{driverAssetsPath}}/images/small.png",

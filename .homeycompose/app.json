@@ -24,5 +24,18 @@
   },
   "author": {
     "name": "Peter Obel"
-  }
+  },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "zealofzebras"
+      }
+    }
+  },
+  "bugs": {
+    "url": "https://github.com/petero-dk/org.danfoss.air/issues"
+  },
+  "source" : "https://github.com/petero-dk/org.danfoss.air",
+  "support" : "https://community.homey.app/t/app-pro-danfoss-air/142497",
+  "homeyCommunityTopicId": 142497
 }

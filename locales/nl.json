@@ -1,0 +1,14 @@
+{
+  "pair": {
+    "start": {
+      "error": "Er is een fout opgetreden.",
+      "not_found": "Apparaat niet gevonden, of parameter komt niet overeen.",
+      "intro": "Voer het IP-adres van het apparaat in",
+      "invalidIP": "Voer een geldig IPv4-adres in, bijvoorbeeld 192.168.1.10",
+      "ipAddress": "IP-adres",
+      "required": "IP-adres is een verplichte waarde.",
+      "saveSettings": "Instellingen opslaan",
+      "title01": "Verbind Danfoss Air"
+    }
+  }
+}

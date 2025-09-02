@@ -1,0 +1,14 @@
+{
+  "pair": {
+    "start": {
+      "error": "Der opstod en fejl.",
+      "not_found": "Enheden blev ikke fundet, eller parameteren matcher ikke.",
+      "intro": "Indtast enhedens IP-adresse",
+      "invalidIP": "Indtast venligst en gyldig IPv4-adresse, f.eks. 192.168.1.10",
+      "ipAddress": "IP-adresse",
+      "required": "IP-adresse er en p&aring;kr&aelig;vet v&aelig;rdi.",
+      "saveSettings": "Gem indstillinger",
+      "title01": "Tilslut Danfoss Air"
+    }
+  }
+}

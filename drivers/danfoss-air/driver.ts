@@ -7,7 +7,7 @@ module.exports = class MyDriver extends Homey.Driver {
    * onInit is called when the driver is initialized.
    */
   async onInit() {
-    this.log('MyDriver has been initialized');
+    this.log('DanfossAir Driver has been initialized');
   }
 
   async onPair(session: Homey.Driver.PairSession): Promise<void> {

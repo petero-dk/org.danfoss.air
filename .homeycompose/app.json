@@ -1,6 +1,6 @@
 {
   "id": "org.danfoss.air",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "compatibility": ">=12.4.0",
   "sdk": 3,
   "platforms": [
@@ -10,12 +10,12 @@
     "en": "Danfoss Air"
   },
   "description": {
-    "en": "Adds support for Danfoss Air units"
+    "en": "Fresh air, pure comfort."
   },
   "category": [
     "climate"
   ],
-  "brandColor" : "#bb000c",
+  "brandColor": "#bb000c",
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",
@@ -35,7 +35,7 @@
   "bugs": {
     "url": "https://github.com/petero-dk/org.danfoss.air/issues"
   },
-  "source" : "https://github.com/petero-dk/org.danfoss.air",
-  "support" : "https://community.homey.app/t/app-pro-danfoss-air/142497",
+  "source": "https://github.com/petero-dk/org.danfoss.air",
+  "support": "https://community.homey.app/t/app-pro-danfoss-air/142497",
   "homeyCommunityTopicId": 142497
 }

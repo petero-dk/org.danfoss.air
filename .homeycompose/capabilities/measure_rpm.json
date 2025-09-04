@@ -1,0 +1,14 @@
+{
+  "title": {
+    "en": "Fan Speed"
+  },
+  "type": "number",
+  "units": {
+    "en": "rpm"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "sensor",
+  "uiQuickAction": false,
+  "icon": "assets/capabilities/measure_rpm.svg"
+}

@@ -6,10 +6,13 @@
   "capabilities": [
     "measure_battery",
     "onoff.boost",
+    "onoff.bypass",
+    "onoff.automatic_bypass",
     "fan_speed.step",
     "fan_mode",
-    "measure_speed.supply",
-    "measure_speed.extract",
+    "alarm_generic.defrosting",
+    "measure_rpm.supply",
+    "measure_rpm.extract",
     "measure_hepa_filter",
     "measure_humidity",
     "measure_temperature.inside_calculated",
@@ -23,23 +26,89 @@
     "onoff.boost": {
       "title": {
         "en": "Boost"
+      },
+      "titleTrue": {
+        "en": "Boost On"
+      },
+      "titleFalse": {
+        "en": "Boost Off"
+      },
+      "insightsTitleTrue": {
+        "en": "Boost is active"
+      },
+      "insightsTitleFalse": {
+        "en": "Boost is inactive"
+      }
+    },
+    "onoff.bypass": {
+      "title": {
+        "en": "Bypass"
+      },
+      "titleTrue": {
+        "en": "Bypass On"
+      },
+      "titleFalse": {
+        "en": "Bypass Off"
+      },
+      "insightsTitleTrue": {
+        "en": "Bypass is active"
+      },
+      "insightsTitleFalse": {
+        "en": "Bypass is inactive"
+      }
+    },
+    "onoff.automatic_bypass": {
+      "title": {
+        "en": "Automatic Bypass"
+      },
+      "titleTrue": {
+        "en": "Automatic Bypass Enabled"
+      },
+      "titleFalse": {
+        "en": "Automatic Bypass Disabled"
+      },
+      "insightsTitleTrue": {
+        "en": "Automatic Bypass is enabled"
+      },
+      "insightsTitleFalse": {
+        "en": "Automatic Bypass is disabled"
       }
     },
     "fan_speed.step": {
-      "step": 10
+      "title": {
+        "en": "Fan step"
+      },
+      "step": 10,
+      "max": 100,
+      "min": 1
     },
-    "measure_speed.supply": {
-      "unit": "rpm",
+    "measure_rpm.supply": {
       "title": {
         "en": "Supply fan speed",
         "nl": ""
       }
     },
-    "measure_speed.extract": {
-      "unit": "rpm",
+    "measure_rpm.extract": {
       "title": {
         "en": "Extract fan speed",
         "nl": ""
+      }
+    },
+    "alarm_generic.defrosting": {
+      "title": {
+        "en": "Defrosting"
+      },
+      "titleTrue": {
+        "en": "Defrosting"
+      },
+      "titleFalse": {
+        "en": "Not defrosting"
+      },
+      "insightsTitleTrue": {
+        "en": "Defrosting started"
+      },
+      "insightsTitleFalse": {
+        "en": "Defrosting stopped"
       }
     },
     "fan_mode": {

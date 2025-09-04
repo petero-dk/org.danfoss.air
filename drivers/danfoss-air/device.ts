@@ -2,61 +2,111 @@ import Homey from 'homey';
 import { DanfossAir, init, ParamData } from 'danfoss-air-api'
 
 
-module.exports = class MyDevice extends Homey.Device {
+module.exports = class DanfossAirDevice extends Homey.Device {
 
   private danfossAir?: DanfossAir = undefined;
+  private currentFanStep?: number;
+  private modeSwitchTimeout?: NodeJS.Timeout;
 
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('Danfoss Air has been initialized');
+    try {
+      this.log('Danfoss Air has been initialized');
 
-    const settings = this.getSettings();
-    console.log(settings.hostname);
-    if (settings.hostname) {
+      const settings = this.getSettings();
+      console.log(settings.hostname);
+      if (settings.hostname) {
 
-      this.danfossAir = new DanfossAir({
-        ip: settings.hostname,
-        delaySeconds: 5,
-        debug: false,
-        singleCallbackFunction: (data: ParamData) => {
-          this.onDanfossMessage(data);
-        }
-      });
-      this.danfossAir.start();
+        this.danfossAir = new DanfossAir({
+          ip: settings.hostname,
+          delaySeconds: 5,
+          debug: false,
+          singleCallbackFunction: (data: ParamData) => {
+            this.onDanfossMessage(data);
+          }
+        });
+        await this.danfossAir.start();
 
-      this.registerCapabilityListener('fan_mode', async (value) => {
-        this.log('Setting value', 'fan_mode', value);
-        var mode = 0;
-        switch (value) {
-          case 'demand':
-            mode = 0;
-            break;
-          case 'program':
-            mode = 1;
-            break;
-          case 'manual':
-            mode = 2;
-            break;
+        const serialNumberHigh = this.danfossAir.getParameter('unit_serialnumber_high_word');
+        const serialNumberLow = this.danfossAir.getParameter('unit_serialnumber_low_word');
+
+        if (!serialNumberHigh || !serialNumberLow) {
+          throw new Error('Sanity check failed: Serial numbers are not available');
         }
-        await this.danfossAir?.setMode(mode);
-      });
-      this.registerCapabilityListener('fan_speed.step', async (value) => {
-        this.log('Setting value', 'fan_speed.step', value);
-        await this.danfossAir?.setFanStep(Math.min(10, Math.max(1, Math.floor((value as number) / 10))));
-      });
-      this.registerCapabilityListener('onoff.boost', async (value) => {
-        this.log('Setting value', 'onoff.boost', value);
-        if (value as boolean) {
-          await this.danfossAir?.activateBoost();
-        } else {
-          await this.danfossAir?.deactivateBoost();
-        }
-      });
+
+
+        const serialNumber = (serialNumberHigh.value as number << 16) | (serialNumberLow.value as number & 0xFFFF);
+        this.log('Found device with serial number:', serialNumber);
+
+        this.registerCapabilityListener('fan_mode', async (value) => {
+          this.log('Setting value', 'fan_mode', value);
+          var mode = 0;
+          switch (value) {
+            case 'demand':
+              mode = 0;
+              break;
+            case 'program':
+              mode = 1;
+              break;
+            case 'manual':
+              mode = 2;
+              break;
+          }
+          this.modeSwitchTimeout = setTimeout(() => {
+            this.log("Cleared the mode switch timer");
+            this.modeSwitchTimeout = undefined;
+          }, 6000);
+          await this.danfossAir?.setMode(mode).catch(this.error);
+        });
+
+
+        this.registerCapabilityListener('fan_speed.step', async (value) => {
+          this.log('Setting value', 'fan_speed.step', value);
+          await this.danfossAir?.setFanStep(Math.min(10, Math.max(1, Math.floor((value as number) / 10)))).catch(this.error);
+        });
+
+        this.registerCapabilityListener('onoff.boost', async (value) => {
+          this.log('Setting value', 'onoff.boost', value);
+          if (value as boolean) {
+            await this.danfossAir?.activateBoost().catch(this.error);
+          } else {
+            await this.danfossAir?.deactivateBoost().catch(this.error);
+          }
+        });
+
+        this.registerCapabilityListener('onoff.bypass', async (value) => {
+          this.log('Setting value', 'onoff.bypass', value);
+          await this.danfossAir?.writeParameterValue('bypass', (value as boolean)).catch(this.error);
+        });
+
+        this.registerCapabilityListener('onoff.automatic_bypass', async (value) => {
+          this.log('Setting value', 'onoff.automatic_bypass', value);
+          await this.danfossAir?.writeParameterValue('automatic_bypass', (value as boolean)).catch(this.error);
+        });
+      }
+      this.updateFanStep(false);
+    } catch (error) {
+      console.trace("Stack trace:");
+      console.log("Error occurred during initialization:", error);
+      this.error(error);
     }
   }
-  onDanfossMessage(data: ParamData) {
+
+  async updateFanStep(hasFanStep: boolean) {
+
+    if (hasFanStep && !this.hasCapability('fan_speed.step')) {
+      await this.addCapability('fan_speed.step').catch(this.error);
+      if (this.currentFanStep)
+        await this.setCapabilityValue('fan_speed.step', (this.currentFanStep) * 10).catch(this.error);
+    }
+    if (!hasFanStep && this.hasCapability('fan_speed.step')) {
+      await this.removeCapability('fan_speed.step').catch(this.error);
+    }
+  }
+
+  async onDanfossMessage(data: ParamData) {
     switch (data.id) {
       case 'humidity_measured_relative':
         this.setCapabilityValue('measure_humidity', data.value).catch(this.error);
@@ -71,22 +121,36 @@ module.exports = class MyDevice extends Homey.Device {
             mode = 'manual'
             break;
         }
-        this.setCapabilityValue('fan_mode', mode).catch(this.error);
+
+        const currentMode = this.getCapabilityValue('fan_mode');
+
+        if (!this.modeSwitchTimeout) {
+          await this.setCapabilityValue('fan_mode', mode).catch(this.error);
+          await this.updateFanStep(data.value == 2);
+        } else {
+          this.log("Skipping setting fan mode to", mode, "because we are in a mode switch timeout");
+        }
+        break;
+      case 'bypass':
+        await this.setCapabilityValue('onoff.bypass', (data.value as boolean)).catch(this.error);
+        break;
+      case 'automatic_bypass':
+        await this.setCapabilityValue('onoff.automatic_bypass', (data.value as boolean)).catch(this.error);
         break;
       case 'boost':
-        this.setCapabilityValue('onoff.boost', (data.value as boolean)).catch(this.error);
+        await this.setCapabilityValue('onoff.boost', (data.value as boolean)).catch(this.error);
         break;
       case 'fan_step':
-        this.setCapabilityValue('fan_speed.step', (data.value as number) * 10).catch(this.error);
+        this.currentFanStep = data.value as number;
+        if (this.hasCapability('fan_speed.step')) {
+          await this.setCapabilityValue('fan_speed.step', (data.value as number) * 10).catch(this.error);
+        }
         break;
       case 'fanspeed_supply_actual':
-        this.setCapabilityValue('measure_speed.supply', data.value).catch(this.error);
+        this.setCapabilityValue('measure_rpm.supply', data.value).catch(this.error);
         break;
       case 'fanspeed_extract_actual':
-        this.setCapabilityValue('measure_speed.extract', data.value).catch(this.error);
-        break;
-      case 'total_running_minutes':
-
+        this.setCapabilityValue('measure_rpm.extract', data.value).catch(this.error);
         break;
       case 'battery_indication_percent':
         this.setCapabilityValue('measure_battery', data.value).catch(this.error);
@@ -101,11 +165,9 @@ module.exports = class MyDevice extends Homey.Device {
       case 'temperature_room_calc':
         this.setCapabilityValue('measure_temperature.inside_calculated', data.value).catch(this.error);
         break;
-      case 'boost':
 
-        break;
       case 'defrost_status':
-
+        await this.setCapabilityValue('alarm_generic.defrosting', (data.value as boolean)).catch(this.error);
         break;
       case 'temperature_outdoor':
         this.setCapabilityValue('measure_temperature.outdoor', data.value).catch(this.error);
@@ -118,6 +180,11 @@ module.exports = class MyDevice extends Homey.Device {
         break;
       case 'temperature_exhaust':
         this.setCapabilityValue('measure_temperature.exhaust', data.value).catch(this.error);
+        break;
+      case 'total_running_minutes':
+      case 'unit_hardware_revision':
+      case 'unit_software_revision':
+        //Ignore these, we know them but don't care about them
         break;
       default:
         this.log('Unknown Danfoss Air data received:', JSON.stringify(data, null, 2));
@@ -144,7 +211,9 @@ module.exports = class MyDevice extends Homey.Device {
     newSettings,
     changedKeys,
   }: {
-    oldSettings: { [key: string]: boolean | string | number | undefined | null };
+    oldSettings: {
+      [key: string]: boolean | string | number | undefined | null
+    };
     newSettings: { [key: string]: boolean | string | number | undefined | null };
     changedKeys: string[];
   }): Promise<string | void> {

@@ -1,1 +1,1 @@
-Adds support for Danfoss Air units
+This app makes it easy to connect your Danfoss Air heat exchanger system to Homey, allowing you to monitor and control your indoor climate with ease. By integrating your ventilation system, you can enjoy a healthier and more comfortable home environment, with automation and insights that fit seamlessly into your daily life.

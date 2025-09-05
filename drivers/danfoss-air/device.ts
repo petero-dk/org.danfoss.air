@@ -25,6 +25,10 @@ module.exports = class DanfossAirDevice extends Homey.Device {
           debug: false,
           singleCallbackFunction: (data: ParamData) => {
             this.onDanfossMessage(data);
+          },
+          writeErrorCallback: (error) => {
+            this.error('Danfoss Air write error:', error);
+            (this.homey.app as any).homeyLog.captureException(error);
           }
         });
         await this.danfossAir.start();
@@ -91,6 +95,7 @@ module.exports = class DanfossAirDevice extends Homey.Device {
       console.trace("Stack trace:");
       console.log("Error occurred during initialization:", error);
       this.error(error);
+      (this.homey.app as any).homeyLog.captureException(error);
     }
   }
 

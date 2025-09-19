@@ -7,7 +7,7 @@ module.exports = class DanfossAirDevice extends Homey.Device {
   private danfossAir?: DanfossAir = undefined;
   private currentFanStep?: number;
   private modeSwitchTimeout?: NodeJS.Timeout;
-
+  private homeyLog = (this.homey.app as any).homeyLog;
   /**
    * onInit is called when the device is initialized.
    */
@@ -21,14 +21,20 @@ module.exports = class DanfossAirDevice extends Homey.Device {
 
         this.danfossAir = new DanfossAir({
           ip: settings.hostname,
+          continueOnError: true,
           delaySeconds: 5,
           debug: false,
           singleCallbackFunction: (data: ParamData) => {
             this.onDanfossMessage(data);
           },
-          writeErrorCallback: (error) => {
+          errorCallback: (error: Error, type: string) => {
             this.error('Danfoss Air write error:', error);
-            (this.homey.app as any).homeyLog.captureException(error);
+            this.homeyLog.captureMessage("Error callback from Danfoss Api", {
+              extra: { type, exception: error }
+            });
+            this.homeyLog.captureException(error, {
+              extra: { type, exception: error }
+            });
           }
         });
         await this.danfossAir.start();

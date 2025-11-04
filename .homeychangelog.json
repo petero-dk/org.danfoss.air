@@ -7,5 +7,8 @@
   },
   "1.0.2": {
     "en": "Fix loss of connection bug"
+  },
+  "1.0.3": {
+    "en": "Implemented reconnect on failure"
   }
 }

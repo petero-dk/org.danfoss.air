@@ -14,41 +14,13 @@ module.exports = class DanfossAirDevice extends Homey.Device {
   async onInit() {
     try {
       this.log('Danfoss Air has been initialized');
+      this.setUnavailable().catch(this.error);
 
       const settings = this.getSettings();
       console.log(settings.hostname);
       if (settings.hostname) {
 
-        this.danfossAir = new DanfossAir({
-          ip: settings.hostname,
-          continueOnError: true,
-          delaySeconds: 5,
-          debug: false,
-          singleCallbackFunction: (data: ParamData) => {
-            this.onDanfossMessage(data);
-          },
-          errorCallback: (error: Error, type: string) => {
-            this.error('Danfoss Air write error:', error);
-            this.homeyLog.captureMessage("Error callback from Danfoss Api", {
-              extra: { type, exception: error }
-            });
-            this.homeyLog.captureException(error, {
-              extra: { type, exception: error }
-            });
-          }
-        });
-        await this.danfossAir.start();
-
-        const serialNumberHigh = this.danfossAir.getParameter('unit_serialnumber_high_word');
-        const serialNumberLow = this.danfossAir.getParameter('unit_serialnumber_low_word');
-
-        if (!serialNumberHigh || !serialNumberLow) {
-          throw new Error('Sanity check failed: Serial numbers are not available');
-        }
-
-
-        const serialNumber = (serialNumberHigh.value as number << 16) | (serialNumberLow.value as number & 0xFFFF);
-        this.log('Found device with serial number:', serialNumber);
+        await this.deviceInit();
 
         this.registerCapabilityListener('fan_mode', async (value) => {
           this.log('Setting value', 'fan_mode', value);
@@ -103,6 +75,60 @@ module.exports = class DanfossAirDevice extends Homey.Device {
       this.error(error);
       (this.homey.app as any).homeyLog.captureException(error);
     }
+  }
+
+  async restartInit() {
+    this.setUnavailable().catch(this.error);
+    this.danfossAir?.cleanup();
+
+    setTimeout(async () => {
+      try {
+        this.log('Restarting Danfoss Air device initialization');
+        await this.deviceInit();
+      } catch (error) {
+        console.trace("Stack trace:");
+        console.log("Error occurred during restart initialization:", error);
+        this.error('Error during Danfoss Air device restart initialization:', error);
+        (this.homey.app as any).homeyLog.captureException(error);
+      }
+    }, 10000);
+  }
+
+  async deviceInit() {
+
+    const settings = this.getSettings();
+    this.danfossAir = new DanfossAir({
+      ip: settings.hostname,
+      continueOnError: true,
+      delaySeconds: 5,
+      debug: false,
+      singleCallbackFunction: (data: ParamData) => {
+        this.onDanfossMessage(data);
+      },
+      errorCallback: (error: Error, type: string) => {
+        this.error('Danfoss Air write error:', error);
+        this.homeyLog.captureMessage("Error callback from Danfoss Api", {
+          context: { "demo": "1", type, exception: error, json: JSON.stringify(error) }
+        });
+        this.homeyLog.captureException(error, {
+          context: { "demo": "1", type, exception: error, json: JSON.stringify(error) }
+        });
+        this.restartInit();
+      }
+    });
+    await this.danfossAir.start();
+
+    const serialNumberHigh = this.danfossAir.getParameter('unit_serialnumber_high_word');
+    const serialNumberLow = this.danfossAir.getParameter('unit_serialnumber_low_word');
+
+    if (!serialNumberHigh || !serialNumberLow) {
+      throw new Error('Sanity check failed: Serial numbers are not available');
+    }
+
+
+    const serialNumber = (serialNumberHigh.value as number << 16) | (serialNumberLow.value as number & 0xFFFF);
+    this.log('Found device with serial number:', serialNumber);
+    this.setAvailable().catch(this.error);
   }
 
   async updateFanStep(hasFanStep: boolean) {

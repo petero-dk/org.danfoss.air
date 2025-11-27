@@ -1,9 +1,11 @@
 'use strict';
 
 import Homey from 'homey';
+
 const { Log } = require('homey-log');
 
 module.exports = class DanfossApp extends Homey.App {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   homeyLog: any;
 
   /**
@@ -13,5 +15,4 @@ module.exports = class DanfossApp extends Homey.App {
     this.homeyLog = new Log({ homey: this.homey });
     this.log('Danfoss Air App has been initialized');
   }
-
-}
+};

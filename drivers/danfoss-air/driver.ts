@@ -1,6 +1,5 @@
 import { DanfossAir } from 'danfoss-air-api';
 import Homey from 'homey';
-import PairSession from 'homey/lib/PairSession';
 
 module.exports = class DanfossAirDriver extends Homey.Driver {
 
@@ -12,26 +11,36 @@ module.exports = class DanfossAirDriver extends Homey.Driver {
   }
 
   async onPair(session: Homey.Driver.PairSession): Promise<void> {
+    interface DeviceData {
+      id: number;
+      ipadr: string;
+      macadr: string;
+    }
 
-    var devices: any[] = [];
-
-    session.setHandler("get_devices", async (data: any) => {
-
-      let devData: {
+    interface DeviceDescriptor {
+      name: string;
+      data: {
         id: number;
-        ipadr: any;
-        macadr: string;
-      } | null = null;
+        ipadr: string;
+      };
+      settings: {
+        hostname: string;
+      };
+    }
+
+    const devices: DeviceDescriptor[] = [];
+
+    session.setHandler('get_devices', async (data: { ipaddress: string; deviceName: string }) => {
+      let devData: DeviceData | null = null;
 
       try {
 
         const danfossAir = new DanfossAir({
           ip: data.ipaddress,
           delaySeconds: 5,
-          debug: false
+          debug: false,
         });
         await danfossAir.start();
-
 
         const serialNumberHigh = danfossAir.getParameter('unit_serialnumber_high_word');
         const serialNumberLow = danfossAir.getParameter('unit_serialnumber_low_word');
@@ -40,40 +49,37 @@ module.exports = class DanfossAirDriver extends Homey.Driver {
           throw new Error('Sanity check failed: Serial numbers are not available');
         }
 
-
         const serialNumber = (serialNumberHigh.value as number << 16) | (serialNumberLow.value as number & 0xFFFF);
         this.log('Found device with serial number:', serialNumber);
 
-        //TODO: GET unique identifier
+        // TODO: GET unique identifier
         devData = {
           id: serialNumber,
           ipadr: data.ipaddress,
-          macadr: "00:07:68:00:00"
+          macadr: '00:07:68:00:00',
         };
       } catch (error) {
-        this.log("Not a real Danfoss Air device:", error);
+        this.log('Not a real Danfoss Air device:', error);
       }
       if (devData != null) {
-        var deviceDescriptor = {
-          "name": data.deviceName,
-          "data": {
-            "id": devData.id,
-            "ipadr": data.ipaddress
+        const deviceDescriptor: DeviceDescriptor = {
+          name: data.deviceName,
+          data: {
+            id: devData.id,
+            ipadr: data.ipaddress,
           },
-          "settings": {
-            "hostname": data.ipaddress
-          }
+          settings: {
+            hostname: data.ipaddress,
+          },
         };
         devices.push(deviceDescriptor);
-        session.emit("found", null);
+        await session.emit('found', null);
       } else {
-        session.emit("not_found", null);
+        await session.emit('not_found', null);
       }
     });
 
-    session.setHandler("list_devices", async (data: any) => {
-      return devices;
-    });
+    session.setHandler('list_devices', async () => devices);
   }
 
   /**

@@ -26,7 +26,14 @@ module.exports = class DanfossAirDevice extends Homey.Device {
       const settings = this.getSettings();
       this.log('Hostname:', settings.hostname);
       if (settings.hostname) {
-        await this.deviceInit();
+        try {
+          await this.deviceInit();
+        } catch (error) {
+          this.error('Initial device initialization failed, will retry:', error);
+          this.homeyLog.captureException(error);
+          // Trigger a retry on initial failure
+          this.restartInit().catch(this.error);
+        }
 
         this.registerCapabilityListener('fan_mode', async (value) => {
           this.log('Setting value', 'fan_mode', value);

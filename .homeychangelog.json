@@ -10,5 +10,8 @@
   },
   "1.0.3": {
     "en": "Implemented reconnect on failure"
+  },
+  "1.0.4": {
+    "en": "Fixed a memory leak"
   }
 }
